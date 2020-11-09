@@ -15,6 +15,17 @@ This blog is based upton [Reverie](https://github.com/amitmerchant1990/reverie) 
 
 To visit click [here](https://flowkap.github.io/)!
 
+If you want to try it / fork it either follow the docs under the originally forked repo or:
+
+```
+# you need ruby and jekyll installed!
+# https://jekyllrb.com/docs/installation/ubuntu/
+bundle
+jekyll server --watch
+```
+
+Or push to your own github pages repo.
+
 ## License
 
 MIT
