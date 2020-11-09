@@ -1,6 +1,6 @@
 <div align="center">
   <br>
-  <img src="/images/flowkap.png" alt="Reverie" width="200"/>
+  <img src="/images/flowkap.png" alt="Flowkap" width="200"/>
   <br>
   <p align="center">
     <i>Spend me a coffee if we ever meet and you like to :)</a></i>
