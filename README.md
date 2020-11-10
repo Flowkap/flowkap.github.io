@@ -13,7 +13,7 @@
 
 This blog is based upton [Reverie](https://github.com/amitmerchant1990/reverie) and hence [Jekyll](https://jekyllrb.com/)-powered.
 
-To visit click [here](https://flowkap.github.io/)!
+To visit click [here](https://flowkap.dev/)!
 
 If you want to try it / fork it either follow the docs under the originally forked repo or:
 
