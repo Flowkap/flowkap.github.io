@@ -1,8 +1,8 @@
 ---
 layout: post
 title: Another typescript template
-categories: [Typescript,Nodejs]
-excerpt: Yes I did it. Another [typescript template](https://github.com/Flowkap/typescript-node-template) has made it into existence. Why did I do this? ...
+categories: [Typescript, Nodejs]
+excerpt: Yes I did it. Another typescript template has made it into existence. Why did I do this? ...
 ---
 
 Yes I did it. Another [typescript template](https://github.com/Flowkap/typescript-node-template) has made it into existence. Why did I do this? More boilerplate on the internet will not help you might say, contribute to an existing one you might say, and you're of course not wrong. Kind of. The reason is the following: Node.js is still a very versatile environment with many many things and libs to choose from. Also a lot of the popluar ones changed over time. A lot. And thats what made me start this project: Incompatibilities in between [mocha](https://mochajs.org/) [nyc](https://github.com/istanbuljs/nyc) and typescript to be specific.
