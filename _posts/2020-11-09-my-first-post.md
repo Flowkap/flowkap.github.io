@@ -2,6 +2,7 @@
 layout: post
 title: My first post
 categories: [MISC]
+excerpt: This is my first blog post on this site. Actually it's about how I set up this blog in the first place and why. I'm going to switch job soon, and with it comes that...
 ---
 
 This is my first blog post on this site. Actually it's about how I set up this blog in the first place and why.
