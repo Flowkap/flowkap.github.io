@@ -17,7 +17,7 @@ The more I work with open source though, the more I like the idea of sharing. I 
 
 <strong>"Someone did probably what you want to do before in a better way!"</strong>
 
-And so it is like 99% of the times. As well as this time! I was sure about hosting at [GitHub Pages](https://pages.github.com/) straight away and was searching for a good template for a blog. Quickly I stubmled across [Jekyll Now](https://github.com/barryclark/jekyll-now) written by [Barry Clark](https://www.barryclark.co/). It looked exactly like what I was searching for but lacking a few features (like code highlighting styles) and I would've needed to tweak quite a lot.
+And so it is like 99% of the times. As well as this time! I was sure about hosting at [GitHub Pages](https://pages.github.com/) straight away and was searching for a good template for a blog. Quickly I stumbled across [Jekyll Now](https://github.com/barryclark/jekyll-now) written by [Barry Clark](https://www.barryclark.co/). It looked exactly like what I was searching for but lacking a few features (like code highlighting styles) and I would've needed to tweak quite a lot.
 
 Thanks to some other people on his Issue list I then found a fork [Reverie](https://github.com/amitmerchant1990/reverie) that has all of that.
 
