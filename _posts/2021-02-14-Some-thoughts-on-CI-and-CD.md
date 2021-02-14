@@ -2,7 +2,7 @@
 layout: post
 title: Some thoughts on CI/CD and automation
 categories: [CI/CD, Automation]
-excerpt: 'I recently read an article recommended by a college. It started with *"The moral of the story is, don’t treat the symptoms: treat the cause."* [...]'
+excerpt: 'I recently read an article recommended by a college. It started with "The moral of the story is, don’t treat the symptoms: treat the cause." [...]'
 ---
 
 I recently read an article recommended by a college. It started with *"The moral of the story is, don’t treat the symptoms: treat the cause."* . The article was published a few weeks ago on [Stack Overflow Blog](https://stackoverflow.blog/2021/01/19/fulfilling-the-promise-of-ci-cd/) and I don't want to repeat the content here as you really should read the article yourself! 
