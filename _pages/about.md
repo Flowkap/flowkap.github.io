@@ -10,9 +10,9 @@ I'm a software developer, nerd, husband, father, musician and bread lover from s
 
 - Tries to be a good father every day
 - Codes for a living since 2008
-- Loves baking bread
+- Loves Rick & Morty
 - Plays in a band
 - Listens a lot to music
-- Runs on coffee
+- Weirs coffee person
 - Command line lover
 - Linux 4 life
