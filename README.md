@@ -3,7 +3,7 @@
   <img src="/images/flowkap.png" alt="Flowkap" width="200"/>
   <br>
   <p align="center">
-    <i>Spend me a coffee if we ever meet and you like to :)</a></i>
+    <i>Spend me a coffee if we ever meet and you like to :)</i>
   </p>
 </div>
 
@@ -18,10 +18,10 @@ To visit click [here](https://flowkap.dev/)!
 If you want to try it / fork it either follow the docs under the originally forked repo or:
 
 ```
-# you need ruby and jekyll installed!
-# https://jekyllrb.com/docs/installation/ubuntu/
-bundle
-jekyll server --watch
+# you need ruby 3.2.2 and jekyll installed!
+# https://jekyllrb.com/docs/installation/
+bundle install
+bundle exec jekyll server --watch
 ```
 
 Or push to your own github pages repo.

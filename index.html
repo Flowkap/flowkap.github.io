@@ -1,7 +1,19 @@
 ---
 layout: default
+permalink: /
 ---
 
+<script>
+  window.location.href = "/about/";
+</script>
+
+<noscript>
+  <meta http-equiv="refresh" content="0;URL='/about/'" />
+</noscript>
+
+<p>If you are not redirected automatically, follow this <a href="/about/">link to the About page</a>.</p>
+
+<!-- Original content commented out for later re-enabling
 <div class="posts">
   {% for post in paginator.posts %}
     <article class="post">
@@ -20,7 +32,7 @@ layout: default
     </article>
   {% endfor %}
 
-  <!-- pagination -->
+  {# pagination #}
   {% if paginator.total_pages > 1 %}
   <div class="pagination">
     {% if paginator.previous_page %}
@@ -47,3 +59,4 @@ layout: default
   </div>
   {% endif %}
 </div>
+-->
