@@ -75,12 +75,12 @@ plugins:
   - jekyll-sitemap # Create a sitemap using the official Jekyll sitemap gem
   - jekyll-feed # Create an Atom feed using the official Jekyll feed gem
   - jekyll-seo-tag
-  # - jekyll-paginate # Pagination disabled
+  - jekyll-paginate
 
 include: [ '_pages' ]
 
-# paginate: 6
-# paginate_path: /page:num/
+paginate: 6
+paginate_path: /page:num/
 
 # Exclude these files from your production _site
 exclude:
