@@ -3,35 +3,37 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07090a">
 <title>404 – Flowkap</title>
-<link rel="icon" type="image/png" sizes="32x32" href="/images/flowkap-32.png">
+<link rel="icon" type="image/svg+xml" href="/images/avatar/flowkap.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/avatar/flowkap-32.png">
+<link rel="apple-touch-icon" href="/images/avatar/flowkap-180.png">
+<link rel="stylesheet" href="/css/site.css">
 <style>
-  :root { --bg: #07090a; --text: #e8f2e6; --muted: #93a596; --portal: #5ee33f; --portal-dark: #2f9e24; --mustard: #f6c21c; }
-  * { box-sizing: border-box; }
   body {
-    margin: 0; min-height: 100svh; display: grid; place-items: center; padding: 2rem 1.25rem;
-    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(94, 227, 63, .14), transparent 70%), var(--bg);
-    color: var(--text); font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    margin: 0; min-height: 100svh; display: flex; flex-direction: column;
+    background: var(--glow-top), var(--bg);
+    color: var(--text); font-family: var(--font-display);
   }
-  main { max-width: 34rem; }
-  .prompt { color: var(--muted); margin: 0 0 .5rem; }
-  .prompt b { color: var(--portal); }
-  h1 { font-size: clamp(3rem, 12vw, 5rem); margin: 0 0 .5rem; color: var(--portal); text-shadow: 0 0 18px rgba(94, 227, 63, .55); }
+  main { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; width: min(34rem, 100% - 2.5rem); margin-inline: auto; padding: 2rem 0; }
+  h1 { font-size: clamp(3rem, 12vw, 5rem); margin: 0 0 .5rem; color: var(--portal); text-shadow: var(--glow-text); }
   p { color: var(--muted); line-height: 1.6; }
-  a {
-    display: inline-block; margin-top: 1rem; padding: .8rem 1.4rem; border-radius: 10px; text-decoration: none; font-weight: 700;
-    background: var(--portal); color: #061004; box-shadow: 0 4px 0 var(--portal-dark), 0 0 24px rgba(94, 227, 63, .35);
-  }
+  .btn { margin-top: 1rem; }
 </style>
 </head>
 <body>
 <main>
   <p class="prompt"><b>flowkap@earth</b>:~$ cd <span id="path">this-page</span></p>
   <h1>404</h1>
-  <p>bash: no such file or directory. Looks like this page fell through a portal — the old blog posts are gone.</p>
-  <a href="/">cd ~</a>
+  <p>bash: cd: <span id="path-err">this-page</span>: No such file or directory. Looks like this page fell through a portal – the old blog posts are gone.</p>
+  <a class="btn btn-primary" href="/">cd ~</a>
 </main>
-<script>document.getElementById('path').textContent = location.pathname;</script>
+<footer data-footer></footer>
+<script src="/js/footer.js"></script>
+<script>
+  document.getElementById("path").textContent = location.pathname;
+  document.getElementById("path-err").textContent = location.pathname;
+</script>
 </body>
 </html>

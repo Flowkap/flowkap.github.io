@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#07090a">
+<title>Dashboard – Flowkap</title>
+<link rel="icon" type="image/svg+xml" href="../images/avatar/flowkap.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../images/avatar/flowkap-32.png">
+<link rel="apple-touch-icon" href="../images/avatar/flowkap-180.png">
+<link rel="stylesheet" href="../css/site.css">
+<style>
+  body {
+    margin: 0; color: var(--text); font-family: var(--font-body); line-height: 1.5;
+    background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(94, 227, 63, .14), transparent 70%), var(--bg);
+  }
+  .launch { padding-top: calc(var(--nav-h) + clamp(4rem, 14vh, 9rem)); }
+  h2.prompt { font-weight: 400; }
+  h2.other-head { margin-top: 2.5rem; }
+  .meta { color: var(--muted); }
+
+  .summary { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin: 0 0 1rem; padding: .55rem 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; font-family: var(--font-display); font-size: .82rem; }
+  .stat { display: flex; align-items: baseline; gap: .45rem; min-width: 0; }
+  .stat .label { color: var(--muted); }
+  .stat-link { margin-left: auto; }
+  .summary a { text-decoration: none; }
+  .summary a:hover { text-decoration: underline; }
+  .stat .value { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .9rem; min-width: 0; }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: .75rem; }
+  .card h3 { font-family: var(--font-display); font-size: 1rem; margin: 0; overflow-wrap: anywhere; }
+  .card h3 a { color: var(--text); text-decoration: none; }
+  .card h3 a:hover { color: var(--portal); text-decoration: underline; }
+  .card .desc { color: var(--muted); font-size: .88rem; margin: .2rem 0 0; }
+  .card-actions { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; }
+  .repo-btn { display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid var(--line); border-radius: 6px; }
+  .repo-btn:hover { border-color: var(--portal); box-shadow: 0 0 10px rgba(94, 227, 63, .3); }
+  .repo-btn img { width: 14px; height: 14px; }
+
+  .badge { font-family: var(--font-display); font-size: .75rem; font-weight: 700; padding: .2rem .55rem; border-radius: 999px; white-space: nowrap; border: 1px solid currentColor; }
+  .up, .ok-text { color: var(--portal); }
+  .down, .bad-text, .paused, .warn-text { color: var(--mustard); }
+  .down, .bad-text { font-weight: 700; }
+  .unknown { color: var(--muted); }
+
+  .block { border-top: 1px solid var(--line); padding-top: .6rem; }
+  .block-title { font-family: var(--font-display); font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 .45rem; }
+  details.block > summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: .5rem; font-family: var(--font-display); font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  details.block > summary::-webkit-details-marker { display: none; }
+  details.block > summary::after { content: "+"; color: var(--portal); }
+  details.block[open] > summary { margin-bottom: .45rem; }
+  details.block[open] > summary::after { content: "−"; }
+  details.block > summary:hover { color: var(--text); }
+  details.block > summary .peek { text-transform: none; letter-spacing: 0; margin-left: auto; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: .2rem .9rem; font-size: .84rem; margin: 0; }
+  .kv dt { font-family: var(--font-display); color: var(--muted); }
+  .kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+  .kv dd.mono { font-family: var(--font-display); font-size: .8rem; white-space: pre-line; }
+
+  .uptime { display: flex; flex-wrap: wrap; gap: .3rem 1rem; font-family: var(--font-display); font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .uptime b { color: var(--text); font-weight: 600; }
+  .bars { display: flex; gap: 2px; height: 22px; align-items: stretch; margin-bottom: .45rem; }
+  .bars span { flex: 1; border-radius: 2px; background: rgba(147, 165, 150, .25); }
+  .bars span.ok {
+    background: linear-gradient(180deg, rgba(246, 194, 28, .6) 0, var(--portal) 3px, var(--portal-dark) 100%);
+    box-shadow: 0 0 6px rgba(94, 227, 63, .28);
+    transition: box-shadow .15s, filter .15s;
+  }
+  .bars span.ok:hover { filter: brightness(1.15); box-shadow: 0 0 10px rgba(94, 227, 63, .5); }
+  .bars span.warn { background: var(--mustard); opacity: .55; }
+  .bars span.bad { background: var(--mustard); }
+  .spark { display: flex; gap: 1px; height: 28px; align-items: flex-end; margin-top: .45rem; }
+  .spark span { flex: 1; min-height: 1px; background: var(--portal); opacity: .8; border-radius: 1px 1px 0 0; }
+  .spark span.zero { background: rgba(147, 165, 150, .25); opacity: 1; }
+
+  .launch .prompt { max-width: 640px; margin: 0 auto 1rem; padding: 0 1.5rem; }
+  .search { position: relative; margin: 0 auto clamp(2.5rem, 6vh, 4rem); max-width: 640px; }
+  .search input { width: 100%; font: inherit; font-size: 1.05rem; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 1.1rem 3.6rem 1.1rem 1.5rem; }
+  .search input:focus { outline: none; border-color: var(--portal); box-shadow: var(--glow); }
+  .search input::-webkit-search-cancel-button { display: none; }
+  .search button {
+    position: absolute; top: 50%; right: .45rem; transform: translateY(-50%); display: grid; place-items: center;
+    width: 2.5rem; height: 2.5rem; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer;
+  }
+  .search button:hover, .search input:focus + button { color: var(--portal); }
+  .search button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .shortcuts { display: flex; flex-wrap: nowrap; justify-content: center; justify-content: safe center; overflow-x: auto; gap: 6px; max-width: 100%; padding: 6px 4px; margin: 0 auto; }
+  .shortcut { flex: 0 0 auto; width: 96px; display: flex; flex-direction: column; align-items: center; gap: .45rem; padding: .8rem .4rem; border-radius: var(--radius); text-decoration: none; color: var(--text); border: 1px solid transparent; min-width: 0; }
+  .shortcut:hover { background: var(--panel); border-color: var(--line); }
+  .shortcut .icon { width: 44px; height: 44px; border-radius: 50%; background: var(--panel); border: 1px solid var(--line); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; color: var(--portal); overflow: hidden; }
+  .shortcut .icon img { width: 22px; height: 22px; }
+  .shortcut:hover .icon { border-color: var(--portal); box-shadow: 0 0 14px rgba(94, 227, 63, .3); }
+  .shortcut span:last-child { font-size: .78rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .notice { font-family: var(--font-display); font-size: .82rem; color: var(--muted); background: var(--panel); border: 1px dashed var(--line); border-radius: var(--radius); padding: .8rem 1rem; margin: 0 0 1rem; }
+  .notice.err { color: var(--mustard); }
+  .ttl { margin-left: .6rem; }
+  .sub { font-size: .78rem; color: var(--muted); font-family: var(--font-display); }
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Dashboard">
+  <div class="wrap">
+    <a class="nav-brand" href="../"><img src="../images/avatar/flowkap.svg" alt="" width="36" height="36"><span>~/dashboard</span></a>
+    <div class="nav-prefs" data-prefs></div>
+  </div>
+</nav>
+
+<main>
+  <h1 class="sr-only">Dashboard</h1>
+  <section class="section launch">
+    <div class="wrap">
+      <p class="prompt" aria-hidden="true"><b>flowkap@earth</b>:~/dashboard$ duckduckgo --query</p>
+      <form class="search" data-prefs-target action="https://duckduckgo.com/" method="get" role="search">
+        <input type="search" name="q" placeholder="Search DuckDuckGo" aria-label="Search DuckDuckGo" autocomplete="off" autofocus>
+        <button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      </form>
+      <nav class="shortcuts" id="shortcuts" aria-label="Shortcuts"></nav>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="wrap">
+      <div id="notice"></div>
+      <h2 class="prompt"><b>flowkap@earth</b>:~/dashboard$ ls sites/</h2>
+      <div class="summary" role="group" aria-label="Summary">
+        <div class="stat"><div class="label">up</div><div class="value" id="s-up">–</div></div>
+        <div class="stat"><div class="label">down</div><div class="value" id="s-down">–</div></div>
+        <div class="stat"><div class="label">uptime 30d</div><div class="value" id="s-30">–</div></div>
+        <div class="stat"><div class="label">uptime 90d</div><div class="value" id="s-90">–</div></div>
+        <span class="stat-link meta" id="updated">loading…</span>
+        <span class="meta" id="ratelimit" title="GitHub API requests left this hour (unauthenticated: 60/h)"></span>
+        <a href="https://stats.uptimerobot.com/96KtPrQMTq">UptimeRobot</a>
+      </div>
+      <div class="grid" id="sites"></div>
+
+      <h2 class="prompt other-head" id="other-head" hidden><b>flowkap@earth</b>:~/dashboard$ ls --unmatched monitors/</h2>
+      <div class="grid" id="other"></div>
+    </div>
+  </section>
+</main>
+
+<footer data-footer></footer>
+
+<script src="../js/footer.js"></script>
+<script src="../js/prefs.js"></script>
+<script>
+(() => {
+  const STATUS_PAGE = "96KtPrQMTq";
+  const STATUS_URL = `https://stats.uptimerobot.com/${STATUS_PAGE}`;
+  const UPTIME_API = `https://stats.uptimerobot.com/api/getMonitorList/${STATUS_PAGE}?page=1`;
+  const GH = "https://api.github.com";
+  const DOH = "https://cloudflare-dns.com/dns-query";
+  const GITHUB_PAGES_IPS = ["185.199.108.153", "185.199.109.153", "185.199.110.153", "185.199.111.153"];
+  const UPTIME_REFRESH_MS = 5 * 60 * 1000;
+  // RDAP is only published for some TLDs (rdap.org answers 404 for .de and .ch).
+  const RDAP_TLDS = ["dev"];
+
+  // Public repo: everything listed here is visible to anyone.
+  // Icons live in images/icons/<icon>.svg, colored in the site green (#5ee33f, --portal) by hand.
+  const SHORTCUTS = [
+    { name: "NVST", url: "https://home.nvst.cloud/", icon: "nvst" },
+    { name: "Jira", url: "https://investify.atlassian.net/jira", icon: "jira" },
+    { name: "Confluence", url: "https://investify.atlassian.net/wiki", icon: "confluence" },
+    { name: "GitLab", url: "https://git.ioap.eu/", icon: "gitlab" },
+    { name: "ChatGPT", url: "https://chatgpt.com/", icon: "chatgpt" },
+    { name: "GitHub", url: "https://github.com/flowkap", icon: "github" },
+    { name: "Bandcamp", url: "https://bandcamp.com/flowkap", icon: "bandcamp" },
+    { name: "LinkedIn", url: "https://www.linkedin.com/in/floriankappes", icon: "linkedin" },
+  ];
+
+  const SITES = [
+    { name: "flowkap.dev", url: "https://flowkap.dev/", repo: "flowkap/flowkap.github.io", desc: "Personal site" },
+    { name: "gabykappes.de", url: "https://gabykappes.de/", repo: "flowkap/musikschule", desc: "Music school" },
+    { name: "nenscheissmussi.ch", url: "https://nenscheissmussi.ch/", repo: "flowkap/nenscheissmussich", desc: "'Nen Scheiss muss ich!" },
+    { name: "soulcantina.de", url: "https://soulcantina.de/", repo: "flowkap/soulcantina", desc: "Soul Cantina" },
+  ];
+
+  const state = { monitors: undefined, uptimeError: null, uptimeData: null, uptimeAt: null, ghLeft: null, ghReset: null, gh: {}, dns: {}, cert: {}, rdap: {} };
+
+  // ---------- helpers ----------
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+  const link = (label, href) => { const a = el("a", null, label); a.href = href; return a; };
+  const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return ""; } };
+  const num = (r) => parseFloat(r && typeof r === "object" ? r.ratio : r);
+  const pct = (r) => { const v = num(r); return Number.isFinite(v) ? `${v.toFixed(2)}%` : "–"; };
+  const ago = (d) => {
+    if (!d) return "–";
+    const s = (Date.now() - new Date(d).getTime()) / 1000;
+    if (!Number.isFinite(s)) return "–";
+    const units = [[31536000, "y"], [2592000, "mo"], [86400, "d"], [3600, "h"], [60, "min"]];
+    for (const [sec, u] of units) if (Math.abs(s) >= sec) return s >= 0 ? `${Math.floor(s / sec)}${u} ago` : `in ${Math.floor(-s / sec)}${u}`;
+    return "just now";
+  };
+  const validDate = (d) => { const t = d ? new Date(d) : null; return t && !Number.isNaN(t.getTime()) ? t : null; };
+  const daysUntil = (d) => { const t = validDate(d); return t ? Math.floor((t.getTime() - Date.now()) / 86400000) : null; };
+  const fmtDate = (d) => validDate(d)?.toISOString().slice(0, 10) ?? "–";
+
+  async function getJSON(url, opts = {}, timeoutMs = 15000) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...opts, signal: ctrl.signal });
+      return { res, data: res.status === 204 ? null : await res.json().catch(() => null) };
+    } finally { clearTimeout(timer); }
+  }
+
+  // ---------- UptimeRobot ----------
+  function statusOf(m) {
+    const c = String(m?.statusClass ?? m?.status ?? "").toLowerCase();
+    if (["success", "up", "2"].includes(c)) return ["up", "UP"];
+    if (["danger", "down", "8", "9"].includes(c)) return ["down", "DOWN"];
+    if (["black", "paused", "0"].includes(c)) return ["paused", "PAUSED"];
+    return ["unknown", "?"];
+  }
+  function matchMonitor(site, monitors) {
+    const h = host(site.url);
+    return monitors.find((m) => host(m.url) === h)
+      || monitors.find((m) => String(m.name || "").toLowerCase().includes(h));
+  }
+  async function loadUptime() {
+    try {
+      const { res, data } = await getJSON(`${UPTIME_API}&_=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok || !data) throw new Error(`HTTP ${res.status}`);
+      state.uptimeData = data;
+      state.monitors = data?.psp?.monitors ?? data?.monitors ?? [];
+      state.uptimeError = null;
+      state.uptimeAt = new Date();
+    } catch (e) {
+      state.uptimeError = e.name === "AbortError" ? "timeout" : (e.message || "fetch failed");
+    }
+  }
+
+  // ---------- GitHub ----------
+  async function gh(path) {
+    const { res, data } = await getJSON(`${GH}${path}`, { headers: { Accept: "application/vnd.github+json" } });
+    const left = res.headers.get("x-ratelimit-remaining");
+    if (left != null) {
+      // Parallel responses arrive out of order: keep the lowest value within one rate-limit window.
+      const reset = res.headers.get("x-ratelimit-reset");
+      if (reset !== state.ghReset) { state.ghReset = reset; state.ghLeft = null; }
+      state.ghLeft = Math.min(state.ghLeft ?? Infinity, Number(left));
+      $("ratelimit").textContent = `gh api ${state.ghLeft}/${res.headers.get("x-ratelimit-limit") || 60}`;
+    }
+    if (res.status === 202) return { pending: true };
+    if (!res.ok) throw new Error(res.status === 403 || res.status === 429 ? "GitHub rate limit" : `GitHub HTTP ${res.status}`);
+    return data;
+  }
+  async function loadRepo(repo) {
+    const [info, deployments, commits, activity, runs] = await Promise.allSettled([
+      gh(`/repos/${repo}`),
+      gh(`/repos/${repo}/deployments?per_page=100`),
+      gh(`/repos/${repo}/commits?per_page=1`),
+      gh(`/repos/${repo}/stats/commit_activity`),
+      gh(`/repos/${repo}/actions/runs?per_page=1`),
+    ]);
+    const val = (r) => (r.status === "fulfilled" ? r.value : null);
+    const deps = Array.isArray(val(deployments)) ? val(deployments) : [];
+    let deployState = null;
+    if (deps[0]) {
+      try {
+        const st = await gh(`/repos/${repo}/deployments/${deps[0].id}/statuses?per_page=1`);
+        deployState = Array.isArray(st) && st[0] ? st[0].state : null;
+      } catch {}
+    }
+    const firstErr = [info, deployments, commits, activity, runs].find((r) => r.status === "rejected");
+    if (info.status === "rejected") { state.gh[repo] = { failed: true, error: info.reason?.message || "GitHub unavailable" }; return; }
+    const act = val(activity);
+    const result = {
+      info: val(info),
+      deployCount: deps.length,
+      deployCountCapped: deps.length >= 100,
+      lastDeploy: deps[0] ? { at: deps[0].created_at, env: deps[0].environment, state: deployState, sha: deps[0].sha } : null,
+      lastCommit: Array.isArray(val(commits)) && val(commits)[0] ? val(commits)[0] : null,
+      activity: Array.isArray(act) ? act.map((w) => w.total) : null,
+      activityPending: !!act?.pending,
+      lastRun: val(runs)?.workflow_runs?.[0] ?? null,
+      runCount: val(runs)?.total_count ?? null,
+      error: firstErr ? firstErr.reason?.message : null,
+    };
+    state.gh[repo] = result;
+    if (result.activityPending) {
+      setTimeout(() => track(gh(`/repos/${repo}/stats/commit_activity`).then((a2) => {
+        if (Array.isArray(a2)) { result.activity = a2.map((w) => w.total); result.activityPending = false; }
+      })), 5000);
+    }
+  }
+
+  // ---------- DNS (DNS-over-HTTPS) ----------
+  const DNS_TYPES = ["A", "AAAA", "CNAME", "MX", "TXT", "CAA"];
+  async function loadDns(domain) {
+    const out = {};
+    await Promise.all(DNS_TYPES.map(async (t) => {
+      try {
+        const { res, data } = await getJSON(`${DOH}?name=${encodeURIComponent(domain)}&type=${t}`, { headers: { Accept: "application/dns-json" } });
+        if (!res.ok || !data) throw new Error(`HTTP ${res.status}`);
+        const typeCode = { A: 1, AAAA: 28, CNAME: 5, MX: 15, TXT: 16, CAA: 257 }[t];
+        out[t] = (data.Answer || []).filter((a) => a.type === typeCode)
+          .map((a) => ({ data: a.data, ttl: a.TTL }));
+      } catch { out[t] = null; }
+    }));
+    state.dns[domain] = out;
+  }
+
+  // crt.sh returns UTC timestamps without a zone suffix.
+  const utc = (t) => (/[zZ]|[+-]\d\d:?\d\d$/.test(String(t)) ? String(t) : `${t}Z`);
+
+  // ---------- TLS certificate (Certificate Transparency via crt.sh) ----------
+  async function loadCert(domain) {
+    try {
+      const { res, data } = await getJSON(`https://crt.sh/?q=${encodeURIComponent(domain)}&output=json&exclude=expired`, {}, 30000);
+      if (!res.ok || !Array.isArray(data)) throw new Error(`HTTP ${res.status}`);
+      const matching = data.filter((c) => String(c.name_value).split("\n").includes(domain));
+      const newest = matching.sort((a, b) => new Date(b.not_before) - new Date(a.not_before))[0];
+      const result = newest
+        ? { notBefore: utc(newest.not_before), notAfter: utc(newest.not_after), issuer: (String(newest.issuer_name).match(/O=([^,]+)/) || [])[1] || newest.issuer_name }
+        : { none: true };
+      state.cert[domain] = result;
+    } catch (e) {
+      state.cert[domain] = { error: e.name === "AbortError" ? "timeout" : (e.message || "unavailable") };
+    }
+  }
+
+  // ---------- Domain registration (RDAP) ----------
+  async function loadRdap(domain) {
+    const tld = domain.split(".").pop();
+    if (!RDAP_TLDS.includes(tld)) { state.rdap[domain] = { unsupported: `.${tld}` }; return; }
+    try {
+      const { res, data } = await getJSON(`https://rdap.org/domain/${encodeURIComponent(domain)}`, { headers: { Accept: "application/rdap+json" } });
+      if (!res.ok || !data) throw new Error(`HTTP ${res.status}`);
+      const ev = (name) => (data.events || []).find((e) => e.eventAction === name)?.eventDate || null;
+      const registrar = (data.entities || []).find((e) => (e.roles || []).includes("registrar"));
+      const registrarName = registrar?.vcardArray?.[1]?.find((f) => f[0] === "fn")?.[3] || null;
+      const result = {
+        expires: ev("expiration"), registered: ev("registration"), changed: ev("last changed"),
+        registrar: registrarName, nameservers: (data.nameservers || []).map((n) => String(n.ldhName || "").toLowerCase()),
+        status: data.status || [],
+      };
+      state.rdap[domain] = result;
+    } catch (e) {
+      state.rdap[domain] = { error: e.message || "unavailable" };
+    }
+  }
+
+  // ---------- rendering ----------
+  const openBlocks = new Set();
+  function block(title) {
+    const b = el("div", "block");
+    b.append(el("p", "block-title", title));
+    return b;
+  }
+  function details(id, title, peek, onOpen) {
+    const d = el("details", "block");
+    d.open = openBlocks.has(id);
+    d.addEventListener("toggle", () => {
+      if (d.open && !openBlocks.has(id)) { openBlocks.add(id); onOpen?.(); } else if (!d.open) openBlocks.delete(id);
+    });
+    const sum = el("summary", null, title);
+    sum.dataset.focus = `summary:${id}`;
+    if (peek) sum.append(peek instanceof Node ? peek : el("span", "peek", peek));
+    d.append(sum);
+    return d;
+  }
+  function kv(rows) {
+    const dl = el("dl", "kv");
+    rows.filter(Boolean).forEach(([k, v, cls]) => {
+      dl.append(el("dt", null, k));
+      const dd = el("dd", cls || null);
+      if (v instanceof Node) dd.append(v); else dd.textContent = v ?? "–";
+      dl.append(dd);
+    });
+    return dl;
+  }
+  function colored(text, cls) { return el("span", cls, text); }
+
+  // dailyRatios: oldest day first, each { date, ratio, label, color }; color "grey" (label "black") = no data,
+  // e.g. days before the monitor existed.
+  function barClass(d, v) {
+    const color = String(d?.color || "").toLowerCase();
+    if (color === "green") return "ok";
+    if (color === "grey" || color === "gray") return null;
+    if (color === "red") return "bad";
+    if (color) return "warn";
+    if (!Number.isFinite(v) || v <= 0) return null;
+    return v >= 99 ? "ok" : v >= 95 ? "warn" : "bad";
+  }
+
+  function uptimeBlock(m) {
+    const b = block("uptime");
+    if (!m) { b.append(el("span", "sub", state.monitors ? "no matching monitor" : (state.uptimeError ? "unavailable" : "loading…"))); return b; }
+    const daily = m.dailyRatios || [];
+    if (daily.length) {
+      const bars = el("div", "bars");
+      daily.slice(-30).forEach((d) => {
+        const v = num(d);
+        const s = el("span");
+        const cls = Number.isFinite(v) ? barClass(d, v) : null;
+        if (cls) s.className = cls;
+        s.title = `${d?.date ? d.date + ": " : ""}${cls ? v.toFixed(2) + "%" : "no data"}`;
+        bars.append(s);
+      });
+      b.append(bars);
+    }
+    const up = el("div", "uptime");
+    [["today", daily[daily.length - 1]], ["7d", m["7dRatio"]], ["30d", m["30dRatio"]], ["90d", m["90dRatio"]]].forEach(([k, v]) => {
+      if (v == null && k === "7d") return;
+      const s = el("span", null, `${k} `);
+      s.append(el("b", null, pct(v)));
+      up.append(s);
+    });
+    b.append(up);
+    return b;
+  }
+
+  function githubBlock(repo) {
+    const g = state.gh[repo];
+    const peek = !g || g.failed ? null : g.lastDeploy ? `deployed ${ago(g.lastDeploy.at)}` : "no deploys";
+    const b = details(`gh:${repo}`, "github", peek, () => { if (!state.gh[repo] || state.gh[repo].failed) lazy(`gh:${repo}`, () => loadRepo(repo)); });
+    if (!g) { b.append(el("span", "sub", "loading…")); return b; }
+    if (g.failed) { b.append(el("span", "sub bad-text", `${g.error} – close and reopen to retry`)); return b; }
+    const i = g.info || {};
+    const depState = g.lastDeploy?.state;
+    const depCls = depState === "success" ? "ok-text" : ["failure", "error"].includes(depState) ? "bad-text" : "warn-text";
+    const deployVal = g.lastDeploy ? el("span") : "–";
+    if (g.lastDeploy) {
+      deployVal.append(document.createTextNode(`${ago(g.lastDeploy.at)} · `));
+      deployVal.append(colored(depState || "?", depCls));
+    }
+    const commitVal = g.lastCommit ? el("span") : "–";
+    if (g.lastCommit) {
+      const msg = String(g.lastCommit.commit?.message || "").split("\n")[0];
+      commitVal.append(link(msg.length > 60 ? msg.slice(0, 57) + "…" : msg, g.lastCommit.html_url));
+      commitVal.append(el("span", "sub", ` · ${ago(g.lastCommit.commit?.author?.date)}`));
+    }
+    const run = g.lastRun;
+    let runVal = null;
+    if (run) {
+      runVal = el("span");
+      const concl = run.conclusion || run.status;
+      runVal.append(link(run.name || "workflow", run.html_url), document.createTextNode(" · "),
+        colored(concl, concl === "success" ? "ok-text" : ["failure", "cancelled", "timed_out"].includes(concl) ? "bad-text" : "warn-text"),
+        el("span", "sub", ` · ${ago(run.created_at)}`));
+    }
+    b.append(kv([
+      ["deploys", `${g.deployCount}${g.deployCountCapped ? "+" : ""} (${g.lastDeploy?.env || "–"})`],
+      ["last deploy", deployVal],
+      ["last commit", commitVal],
+      run ? ["last run", runVal] : ["actions", g.runCount === 0 ? "no workflow runs" : "–"],
+      ["repo", `${i.private ? "private" : "public"} · ★ ${i.stargazers_count ?? "–"} · issues ${i.open_issues_count ?? "–"} · ${i.size != null ? Math.round(i.size / 102.4) / 10 + " MB" : "–"}`],
+      ["language", i.language || "–"],
+      ["created", fmtDate(i.created_at)],
+    ]));
+    if (g.activity) {
+      const max = Math.max(1, ...g.activity);
+      const spark = el("div", "spark");
+      spark.title = "commits per week, last 52 weeks";
+      g.activity.forEach((n) => {
+        const s = el("span", n === 0 ? "zero" : null);
+        s.style.height = `${n === 0 ? 4 : Math.max(8, (n / max) * 100)}%`;
+        s.title = `${n} commits`;
+        spark.append(s);
+      });
+      b.append(spark, el("span", "sub", `${g.activity.reduce((a, n) => a + n, 0)} commits in 52 weeks`));
+    } else if (g.activityPending) {
+      b.append(el("span", "sub", "commit activity is being computed by GitHub – retrying…"));
+    }
+    if (g.error) b.append(el("span", "sub bad-text", g.error));
+    return b;
+  }
+
+  function domainBlock(domain) {
+    const d = state.dns[domain], c = state.cert[domain], r = state.rdap[domain];
+    const loaded = d || c || r;
+    const onPages = d?.A?.length ? d.A.every((x) => GITHUB_PAGES_IPS.includes(x.data)) : null;
+    const tlsDays = c?.notAfter ? daysUntil(c.notAfter) : null;
+    const peek = !loaded ? null : [onPages == null ? null : onPages ? "GitHub Pages" : "not GitHub Pages", tlsDays == null ? null : `tls ${tlsDays}d`].filter(Boolean).join(" · ");
+    const b = details(`dom:${domain}`, "dns & domain", peek, () => { if (!d || !c || !r || c.error || r.error) lazy(`dom:${domain}`, () => loadDomain(domain)); });
+    if (!loaded) { b.append(el("span", "sub", "loading…")); return b; }
+    const expiry = (date) => {
+      if (!date) return "–";
+      const days = daysUntil(date);
+      if (days == null) return "–";
+      return colored(`${fmtDate(date)} (${days}d)`, days < 14 ? "bad-text" : days < 30 ? "warn-text" : "ok-text");
+    };
+    const record = (t) => {
+      const recs = d?.[t];
+      if (recs === undefined) return null;
+      if (recs === null) return [t, "unavailable"];
+      if (!recs.length) return null;
+      const dd = el("span", null, recs.map((x) => x.data).join("\n"));
+      dd.append(el("span", "sub ttl", `ttl ${Math.min(...recs.map((x) => x.ttl))}s`));
+      return [t, dd, "mono"];
+    };
+    const certVal = !c ? "loading…" : c.error ? `unavailable (${c.error})` : c.none ? "no certificate found" : expiry(c.notAfter);
+    const regVal = !r ? "loading…" : r.unsupported ? `not published for ${r.unsupported}` : r.error ? `unavailable (${r.error})` : (r.expires ? expiry(r.expires) : "not published");
+    b.append(kv([
+      onPages == null ? null : ["hosting", colored(onPages ? "GitHub Pages ✓" : "not GitHub Pages", onPages ? "ok-text" : "warn-text")],
+      ["tls expires", certVal],
+      c && !c.error && !c.none ? ["tls issuer", `${c.issuer} · issued ${ago(c.notBefore)}`] : null,
+      ["domain expires", regVal],
+      r && !r.error && r.registrar ? ["registrar", r.registrar] : null,
+      r && !r.error && r.registered ? ["registered", fmtDate(r.registered)] : null,
+      r && !r.error && r.nameservers?.length ? ["nameservers", r.nameservers.join("\n"), "mono"] : null,
+      ...(d ? DNS_TYPES.map(record) : [["records", "loading…"]]),
+    ]));
+    return b;
+  }
+
+  function siteCard(site, m) {
+    const card = el("article", "card");
+    const head = el("div", "card-head");
+    const titles = el("div");
+    const h3 = el("h3");
+    const title = link(site.name, site.url);
+    title.dataset.focus = `title:${site.name}`;
+    h3.append(title);
+    titles.append(h3, el("p", "desc", site.desc || ""));
+    const [cls, label] = m ? statusOf(m) : ["unknown", state.monitors ? "NO MONITOR" : "…"];
+    const actions = el("div", "card-actions");
+    if (site.repo) {
+      const repo = link("", `https://github.com/${site.repo}`);
+      repo.className = "repo-btn";
+      repo.dataset.focus = `repo:${site.repo}`;
+      repo.title = `${site.repo} on GitHub`;
+      repo.setAttribute("aria-label", repo.title);
+      const img = new Image();
+      img.src = "../images/icons/github.svg";
+      img.alt = "";
+      repo.append(img);
+      actions.append(repo);
+    }
+    actions.append(el("span", `badge ${cls}`, label));
+    head.append(titles, actions);
+    card.append(head, uptimeBlock(m));
+    if (site.repo) card.append(githubBlock(site.repo));
+    const domain = host(site.url);
+    if (site.repo && domain) card.append(domainBlock(domain));
+    return card;
+  }
+
+  function renderSummary() {
+    const monitors = state.monitors || [];
+    const data = state.uptimeData;
+    if (state.monitors) {
+      const counts = data?.statistics?.counts;
+      const up = counts?.up ?? monitors.filter((m) => statusOf(m)[0] === "up").length;
+      const down = counts?.down ?? monitors.filter((m) => statusOf(m)[0] === "down").length;
+      $("s-up").textContent = up;
+      $("s-down").textContent = down;
+      $("s-down").className = `value ${down > 0 ? "bad-text" : ""}`;
+      const avg = (k) => {
+        const vals = monitors.map((m) => num(m[k])).filter(Number.isFinite);
+        return vals.length ? vals.reduce((a, v) => a + v, 0) / vals.length : null;
+      };
+      $("s-30").textContent = pct(data?.statistics?.uptime?.l30 ?? avg("30dRatio"));
+      $("s-90").textContent = pct(data?.statistics?.uptime?.l90 ?? avg("90dRatio"));
+    }
+  }
+
+  function render() {
+    const focusKey = document.activeElement?.dataset?.focus;
+    const sites = $("sites"), other = $("other");
+    sites.replaceChildren(); other.replaceChildren();
+    const monitors = state.monitors || [];
+    const used = new Set();
+    SITES.forEach((s) => {
+      const m = matchMonitor(s, monitors) || null;
+      if (m) used.add(m);
+      sites.append(siteCard(s, m));
+    });
+    const rest = monitors.filter((m) => !used.has(m));
+    $("other-head").hidden = rest.length === 0;
+    rest.forEach((m) => other.append(siteCard({ name: m.name || host(m.url) || `#${m.monitorId}`, url: m.url || STATUS_URL }, m)));
+
+    const notice = $("notice");
+    notice.replaceChildren();
+    if (state.uptimeError) {
+      const n = el("p", "notice err", `UptimeRobot unavailable (${state.uptimeError}). `);
+      n.append(link("open status page", STATUS_URL));
+      notice.append(n);
+    }
+    renderSummary();
+    if (focusKey) document.querySelector(`[data-focus="${CSS.escape(focusKey)}"]`)?.focus();
+  }
+
+  // ---------- loading ----------
+  let rafPending = false;
+  const scheduleRender = () => {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => { rafPending = false; render(); });
+  };
+  const track = (p) => p.catch(() => {}).finally(scheduleRender);
+
+  const loadDomain = (domain) => Promise.all([track(loadDns(domain)), track(loadRdap(domain)), track(loadCert(domain))]);
+  // Detail data is fetched only when its block is opened (saves the GitHub rate limit).
+  const inflight = new Map();
+  function lazy(id, fn) {
+    if (inflight.has(id)) return inflight.get(id);
+    const p = track(fn()).finally(() => inflight.delete(id));
+    inflight.set(id, p);
+    return p;
+  }
+
+  async function loadAll() {
+    $("updated").textContent = "loading…";
+    await track(loadUptime());
+    $("updated").textContent = state.uptimeAt ? `updated ${state.uptimeAt.toTimeString().slice(0, 8)}` : "offline";
+  }
+
+  function renderShortcuts() {
+    $("shortcuts").replaceChildren(...SHORTCUTS.map((sc) => {
+      const a = link("", sc.url);
+      a.className = "shortcut";
+      a.title = sc.url;
+      const icon = el("span", "icon");
+      if (sc.icon) {
+        const img = new Image();
+        img.src = `../images/icons/${sc.icon}.svg`;
+        img.alt = "";
+        icon.append(img);
+      } else icon.textContent = sc.name.charAt(0).toUpperCase();
+      a.append(icon, el("span", null, sc.name));
+      return a;
+    }));
+  }
+  renderShortcuts();
+
+  render();
+  loadAll();
+  setInterval(loadAll, UPTIME_REFRESH_MS);
+})();
+</script>
+</body>
+</html>
